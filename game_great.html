@@ -1,0 +1,676 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>3D 长城穿越 - 终极修复版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+        theme: {
+        extend: {
+        colors: {
+        'hud-bg': 'rgba(5, 10, 15, 0.85)',
+        'neon-cyan': '#00f3ff',
+        'neon-amber': '#ffaa00',
+        'neon-red': '#ff2a6d',
+        },
+        fontFamily: {
+        'tech': ['"Orbitron"', 'sans-serif'],
+        'mono': ['"Share Tech Mono"', 'monospace'],
+        },
+        animation: {
+        'spin-slow': 'spin 4s linear infinite',
+        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'flash-red': 'flashRed 0.3s ease-out',
+        },
+        keyframes: {
+        flashRed: {
+        '0%': { backgroundColor: 'rgba(255, 42, 109, 0.6)' },
+        '100%': { backgroundColor: 'transparent' },
+        }
+        }
+        }
+        }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Share Tech Mono', monospace;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .overlay-fx {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .glass {
+            background: rgba(10, 20, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+
+        .menu-enter {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #collision-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: transparent;
+            pointer-events: none;
+            z-index: 40;
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <div id="canvas-container" class="absolute inset-0 z-0"></div>
+    <div class="absolute inset-0 z-10 overlay-fx"></div>
+    <div class="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]"></div>
+    <div id="collision-overlay"></div>
+
+    <!-- 开始菜单 -->
+    <div id="start-menu" class="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-700">
+        <div class="text-center max-w-2xl w-full px-4 menu-enter">
+            <h1 class="text-5xl md:text-7xl font-tech font-bold text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-blue-600 mb-2 tracking-tighter drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">
+                DRONE: WALL
+            </h1>
+            <p class="text-gray-400 text-lg mb-12 tracking-widest">FINAL FIX VERSION</p>
+
+            <div class="glass rounded-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <div class="space-y-4">
+                    <h3 class="text-neon-cyan font-bold border-b border-white/10 pb-2"><i class="fa-solid fa-gamepad mr-2"></i>控制模式</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors border border-transparent hover:border-neon-cyan/50">
+                            <input type="radio" name="control" value="mouse" class="w-4 h-4 text-neon-cyan focus:ring-neon-cyan bg-gray-700 border-gray-600">
+                            <div class="ml-3">
+                                <span class="block text-white font-medium">键鼠模式 (PC)</span>
+                                <span class="block text-xs text-gray-400">WASD 移动，鼠标转向</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-colors border border-transparent hover:border-neon-cyan/50">
+                            <input type="radio" name="control" value="touch" checked class="w-4 h-4 text-neon-cyan focus:ring-neon-cyan bg-gray-700 border-gray-600">
+                            <div class="ml-3">
+                                <span class="block text-white font-medium">触屏模式 (手机)</span>
+                                <span class="block text-xs text-gray-400">左下角虚拟摇杆</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-neon-amber font-bold border-b border-white/10 pb-2"><i class="fa-solid fa-sun mr-2"></i>环境设置</h3>
+
+                    <div class="space-y-2">
+                        <label class="text-sm text-gray-300">初始时间</label>
+                        <input type="range" id="time-slider" min="0" max="24" step="0.1" value="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-neon-amber">
+                        <div class="flex justify-between text-xs text-gray-500 font-mono">
+                            <span>00:00</span>
+                            <span id="time-display">10:00</span>
+                            <span>24:00</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-4">
+                        <span class="text-sm text-gray-300">动态天气</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="weather-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-neon-cyan"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button id="start-btn" class="mt-10 px-12 py-4 bg-gradient-to-r from-neon-cyan to-blue-600 rounded-full text-black font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,243,255,0.4)]">
+                启动引擎 <i class="fa-solid fa-power-off ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud" class="absolute inset-0 z-20 pointer-events-none hidden flex flex-col justify-between p-4 md:p-8">
+        <div class="flex justify-between items-start">
+            <div class="glass px-4 py-2 rounded-br-xl border-l-4 border-neon-cyan">
+                <div class="text-xs text-neon-cyan">SYSTEM STATUS</div>
+                <div class="text-lg font-bold font-tech tracking-wider">ONLINE</div>
+            </div>
+            <div class="glass px-4 py-2 rounded-bl-xl text-right">
+                <div class="text-xs text-gray-400">FLIGHT TIME</div>
+                <div id="flight-timer" class="text-xl font-mono text-white">00:00:00</div>
+            </div>
+        </div>
+
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
+            <div class="w-16 h-16 border border-white/20 rounded-full flex items-center justify-center">
+                <div class="w-1 h-1 bg-neon-cyan rounded-full"></div>
+            </div>
+            <div id="collision-warning" class="mt-4 hidden">
+                <div class="bg-neon-red/80 border border-neon-red text-white px-4 py-1 rounded text-sm font-tech tracking-widest animate-pulse">
+                    ⚠️ COLLISION WARNING
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-end">
+            <div class="glass px-4 py-2 rounded-tr-xl">
+                <div class="flex items-end gap-2">
+                    <span class="text-4xl font-tech font-bold text-white" id="speed-val">0</span>
+                    <span class="text-sm text-gray-400 mb-1">KM/H</span>
+                </div>
+                <div class="w-32 h-1 bg-gray-700 mt-2 rounded-full overflow-hidden">
+                    <div id="speed-bar" class="h-full bg-neon-cyan w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <div id="touch-controls" class="pointer-events-auto fixed bottom-8 left-8 z-50">
+                <div id="joystick-zone" class="w-32 h-32 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-sm relative flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border border-white/5"></div>
+                    <div id="joystick-knob" class="w-12 h-12 rounded-full bg-neon-cyan/50 border-2 border-neon-cyan shadow-[0_0_15px_rgba(0,243,255,0.5)] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-75"></div>
+                </div>
+            </div>
+
+            <div class="glass px-4 py-2 rounded-tl-xl text-right">
+                <div class="text-xs text-neon-amber">ALTITUDE</div>
+                <div class="text-2xl font-mono text-white"><span id="alt-val">145</span>m</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+
+    <script>
+        const config = {
+        controlMode: 'touch',
+        startTime: 10,
+        weatherEnabled: false,
+        baseSpeed: 0,
+        maxSpeed: 1.5,
+        turnSpeed: 0.03,
+        collisionDist: 5.0
+        };
+
+        const state = {
+        isPlaying: false,
+        time: 0,
+        speed: 0,
+        steer: 0,
+        inputVector: { x: 0, y: 0 },
+        isColliding: false
+        };
+
+        const menu = document.getElementById('start-menu');
+        const hud = document.getElementById('hud');
+        const startBtn = document.getElementById('start-btn');
+        const timeSlider = document.getElementById('time-slider');
+        const timeDisplay = document.getElementById('time-display');
+        const weatherToggle = document.getElementById('weather-toggle');
+        const touchControls = document.getElementById('touch-controls');
+        const joystickZone = document.getElementById('joystick-zone');
+        const joystickKnob = document.getElementById('joystick-knob');
+        const collisionOverlay = document.getElementById('collision-overlay');
+        const collisionWarning = document.getElementById('collision-warning');
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.003);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 500;
+        sunLight.shadow.camera.left = -100;
+        sunLight.shadow.camera.right = 100;
+        sunLight.shadow.camera.top = 100;
+        sunLight.shadow.camera.bottom = -100;
+        scene.add(sunLight);
+
+        const droneLight = new THREE.SpotLight(0xffffff, 2, 60, Math.PI/6, 0.5, 1);
+        droneLight.position.set(0, 0, 0);
+        droneLight.target.position.set(0, -10, -20);
+        scene.add(droneLight);
+        scene.add(droneLight.target);
+
+        const noise = new SimplexNoise();
+
+        const wallMaterial = new THREE.MeshStandardMaterial({
+        color: 0x888888,
+        roughness: 0.9,
+        metalness: 0.1,
+        flatShading: true
+        });
+
+        const groundMaterial = new THREE.MeshStandardMaterial({
+        color: 0x3a5a40,
+        roughness: 1.0,
+        metalness: 0.0
+        });
+
+        const wallGroup = new THREE.Group();
+        scene.add(wallGroup);
+
+        function createWallSegment(xPos, zPos) {
+        const segment = new THREE.Group();
+        segment.position.set(xPos, 0, zPos);
+
+        // 地形
+        const groundGeo = new THREE.PlaneGeometry(300, 50, 30, 5);
+        const posAttribute = groundGeo.attributes.position;
+        for (let i = 0; i < posAttribute.count; i++) {
+        const x = posAttribute.getX(i);
+        const y = posAttribute.getY(i);
+        const worldX = xPos + x;
+        const worldZ = zPos + y;
+        const height = noise.noise2D(worldX * 0.01, worldZ * 0.01) * 15 + noise.noise2D(worldX * 0.05, worldZ * 0.05) * 5;
+        posAttribute.setZ(i, height - 5);
+        }
+        groundGeo.computeVertexNormals();
+        const ground = new THREE.Mesh(groundGeo, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        segment.add(ground);
+
+        // 长城墙体
+        const centerHeight = noise.noise2D(xPos * 0.01, zPos * 0.01) * 15 + noise.noise2D(xPos * 0.01, zPos * 0.05) * 5 - 5;
+
+        // 存储碰撞盒引用
+        segment.userData = {
+        hasWall: false,
+        wallMesh: null // 引用墙体 Mesh
+        };
+
+        if (Math.random() > 0.2) {
+        segment.userData.hasWall = true;
+        const width = 20 + Math.random() * 10;
+        const height = 12 + Math.random() * 8;
+        const thickness = 4;
+
+        const wallGeo = new THREE.BoxGeometry(width, height, thickness);
+        const wall = new THREE.Mesh(wallGeo, wallMaterial);
+        wall.position.set(0, centerHeight + height/2, 0);
+        wall.castShadow = true;
+        wall.receiveShadow = true;
+        segment.add(wall);
+
+        // 保存墙体 Mesh 引用，用于实时计算 Box3
+        segment.userData.wallMesh = wall;
+
+        // 城垛
+        const battlementCount = Math.floor(width / 2.5);
+        for(let i=0; i<battlementCount; i++) {
+        const bGeo = new THREE.BoxGeometry(1.5, 2, 1);
+        const b = new THREE.Mesh(bGeo, wallMaterial);
+        b.position.set(-width/2 + 1.5 + i*2.5, centerHeight + height + 1, 0);
+        b.castShadow = true;
+        segment.add(b);
+        }
+
+        // 随机烽火台
+        if (Math.random() > 0.92) {
+        const tGeo = new THREE.CylinderGeometry(6, 8, 25, 8);
+        const tower = new THREE.Mesh(tGeo, wallMaterial);
+        tower.position.set(0, centerHeight + 12.5, 0);
+        tower.castShadow = true;
+        segment.add(tower);
+
+        const fireLight = new THREE.PointLight(0xff6600, 1, 30);
+        fireLight.position.set(0, centerHeight + 26, 0);
+        segment.add(fireLight);
+        }
+        }
+
+        return segment;
+        }
+
+        const segments = [];
+        const segmentSize = 50;
+        const gridRadius = 4;
+
+        for (let x = -gridRadius; x <= gridRadius; x++) {
+        for (let z = -gridRadius; z <= gridRadius; z++) {
+        const seg = createWallSegment(x * segmentSize, z * segmentSize);
+        segments.push({ mesh: seg, gx: x, gz: z });
+        wallGroup.add(seg);
+        }
+        }
+
+        const weatherSystem = new THREE.Group();
+        scene.add(weatherSystem);
+
+        const particleCount = 3000;
+        const particleGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(particleCount * 3);
+        const pVel = [];
+
+        for(let i=0; i<particleCount; i++) {
+        pPos[i*3] = (Math.random() - 0.5) * 400;
+        pPos[i*3+1] = Math.random() * 100;
+        pPos[i*3+2] = (Math.random() - 0.5) * 400;
+        pVel.push({
+        x: (Math.random() - 0.5) * 0.1,
+        y: -Math.random() * 0.2 - 0.1,
+        z: (Math.random() - 0.5) * 0.1
+        });
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.3,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+        });
+
+        const particles = new THREE.Points(particleGeo, particleMat);
+        weatherSystem.add(particles);
+
+        timeSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        const h = Math.floor(val);
+        const m = Math.floor((val - h) * 60);
+        timeDisplay.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        config.startTime = val;
+        });
+
+        let joyTouchId = null;
+        let joyStartPos = { x: 0, y: 0 };
+
+        joystickZone.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        joyTouchId = touch.identifier;
+        joyStartPos = { x: touch.clientX, y: touch.clientY };
+        }, {passive: false});
+
+        joystickZone.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === joyTouchId) {
+        const touch = e.changedTouches[i];
+        const deltaX = touch.clientX - joyStartPos.x;
+        const deltaY = touch.clientY - joyStartPos.y;
+
+        const maxDist = 40;
+        const dist = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+        const angle = Math.atan2(deltaY, deltaX);
+
+        const moveDist = Math.min(dist, maxDist);
+        const knobX = Math.cos(angle) * moveDist;
+        const knobY = Math.sin(angle) * moveDist;
+
+        joystickKnob.style.transform = `translate(calc(-50% + ${knobX}px), calc(-50% + ${knobY}px))`;
+
+        state.inputVector.x = (knobX / maxDist);
+        state.inputVector.y = -(knobY / maxDist);
+        }
+        }
+        }, {passive: false});
+
+        const resetJoystick = () => {
+        joyTouchId = null;
+        joystickKnob.style.transform = `translate(-50%, -50%)`;
+        state.inputVector = { x: 0, y: 0 };
+        };
+        joystickZone.addEventListener('touchend', resetJoystick);
+        joystickZone.addEventListener('touchcancel', resetJoystick);
+
+        const keys = { w: false, s: false, a: false, d: false };
+        window.addEventListener('keydown', (e) => {
+        const k = e.key.toLowerCase();
+        if (keys.hasOwnProperty(k)) keys[k] = true;
+        });
+        window.addEventListener('keyup', (e) => {
+        const k = e.key.toLowerCase();
+        if (keys.hasOwnProperty(k)) keys[k] = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+        if (config.controlMode === 'mouse' && state.isPlaying) {
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        state.inputVector.x = x;
+        }
+        });
+
+        const clock = new THREE.Clock();
+        const speedValEl = document.getElementById('speed-val');
+        const speedBarEl = document.getElementById('speed-bar');
+        const altValEl = document.getElementById('alt-val');
+        const flightTimerEl = document.getElementById('flight-timer');
+
+        function checkCollision() {
+        const dronePos = camera.position.clone();
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+        const lookAheadPos = dronePos.clone().add(forward.multiplyScalar(config.collisionDist));
+
+        let collisionDetected = false;
+
+        segments.forEach(seg => {
+        if (seg.mesh.position.distanceTo(dronePos) > 60) return;
+
+        if (seg.mesh.userData.hasWall && seg.mesh.userData.wallMesh) {
+        // 实时计算世界坐标的 Box3
+        const box = new THREE.Box3().setFromObject(seg.mesh.userData.wallMesh);
+
+        if (box.containsPoint(lookAheadPos)) {
+        collisionDetected = true;
+        }
+        }
+        });
+
+        return collisionDetected;
+        }
+
+        function updateEnvironment(deltaTime) {
+        state.time += deltaTime * 0.5;
+        if (state.time >= 24) state.time = 0;
+
+        // 修复：使用正确的圆周运动公式
+        // 0点 = -PI/2 (最低), 6点 = 0 (日出), 12点 = PI/2 (正午), 18点 = PI (日落)
+        const angle = ((state.time - 6) / 24) * Math.PI * 2 + Math.PI / 2;
+        const r = 100;
+
+        sunLight.position.x = r * Math.cos(angle);
+        sunLight.position.y = r * Math.sin(angle);
+        sunLight.position.z = 50;
+
+        let skyColor, fogColor, lightIntensity, lightColor;
+
+        if (state.time >= 6 && state.time < 18) {
+        skyColor = new THREE.Color(0x87CEEB);
+        fogColor = new THREE.Color(0x87CEEB);
+        lightIntensity = 1.5;
+        lightColor = new THREE.Color(0xffffff);
+        droneLight.intensity = 0;
+        } else if (state.time >= 18 && state.time < 20) {
+        skyColor = new THREE.Color(0xfd5e53);
+        fogColor = new THREE.Color(0x4a3b52);
+        lightIntensity = 0.8;
+        lightColor = new THREE.Color(0xffaa00);
+        droneLight.intensity = 1;
+        } else {
+        skyColor = new THREE.Color(0x050510);
+        fogColor = new THREE.Color(0x050510);
+        lightIntensity = 0.1;
+        lightColor = new THREE.Color(0x6666ff);
+        droneLight.intensity = 2;
+        }
+
+        scene.background = skyColor;
+        scene.fog.color = fogColor;
+        sunLight.intensity = lightIntensity;
+        sunLight.color = lightColor;
+        ambientLight.intensity = Math.max(0.1, lightIntensity * 0.3);
+
+        if (config.weatherEnabled) {
+        weatherSystem.visible = true;
+        const positions = particles.geometry.attributes.position.array;
+        for(let i=0; i<particleCount; i++) {
+        positions[i*3+1] += pVel[i].y;
+        positions[i*3] += pVel[i].x + Math.sin(state.time) * 0.1;
+        positions[i*3+2] += pVel[i].z;
+
+        if(positions[i*3+1] < -20) positions[i*3+1] = 100;
+        if(positions[i*3] > 200) positions[i*3] = -200;
+        if(positions[i*3] < -200) positions[i*3] = 200;
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
+        } else {
+        weatherSystem.visible = false;
+        }
+        }
+
+        function animate() {
+        requestAnimationFrame(animate);
+
+        if (!state.isPlaying) {
+        renderer.render(scene, camera);
+        return;
+        }
+
+        const deltaTime = clock.getDelta();
+
+        if (config.controlMode === 'mouse') {
+        if (keys.w) state.speed = Math.min(state.speed + 0.01, config.maxSpeed);
+        else if (keys.s) state.speed = Math.max(state.speed - 0.015, 0);
+        else state.speed *= 0.98;
+
+        state.steer = state.inputVector.x * config.turnSpeed;
+        } else {
+        const targetSpeed = state.inputVector.y * config.maxSpeed;
+        state.speed += (targetSpeed - state.speed) * 0.1;
+        state.steer = state.inputVector.x * config.turnSpeed;
+        }
+
+        if (state.speed > 0.1) {
+        if (checkCollision()) {
+        state.speed = 0;
+        state.isColliding = true;
+        collisionOverlay.style.animation = 'none';
+        collisionOverlay.offsetHeight;
+        collisionOverlay.style.animation = 'flashRed 0.3s ease-out';
+        collisionWarning.classList.remove('hidden');
+        } else {
+        state.isColliding = false;
+        collisionWarning.classList.add('hidden');
+        }
+        } else {
+        state.isColliding = false;
+        collisionWarning.classList.add('hidden');
+        }
+
+        camera.position.x -= Math.sin(camera.rotation.y) * state.speed * 20;
+        camera.position.z -= Math.cos(camera.rotation.y) * state.speed * 20;
+
+        camera.rotation.y -= state.steer;
+        camera.rotation.z = -state.steer * 10;
+
+        const terrainHeight = noise.noise2D(camera.position.x * 0.01, camera.position.z * 0.01) * 15 + 10;
+        camera.position.y += (terrainHeight - camera.position.y) * 0.1;
+
+        segments.forEach(seg => {
+        const camGX = Math.round(camera.position.x / segmentSize);
+        const camGZ = Math.round(camera.position.z / segmentSize);
+
+        const dx = seg.gx - camGX;
+        const dz = seg.gz - camGZ;
+
+        if (Math.abs(dx) > gridRadius || Math.abs(dz) > gridRadius) {
+        if (dx > gridRadius) seg.gx -= (gridRadius * 2 + 1);
+        if (dx < -gridRadius) seg.gx += (gridRadius * 2 + 1);
+        if (dz > gridRadius) seg.gz -= (gridRadius * 2 + 1);
+        if (dz < -gridRadius) seg.gz += (gridRadius * 2 + 1);
+
+        seg.mesh.position.x = seg.gx * segmentSize;
+        seg.mesh.position.z = seg.gz * segmentSize;
+        }
+        });
+
+        updateEnvironment(deltaTime);
+
+        const displaySpeed = Math.floor(state.speed * 200);
+        speedValEl.innerText = displaySpeed;
+        speedBarEl.style.width = `${(displaySpeed / 300) * 100}%`;
+        altValEl.innerText = Math.floor(camera.position.y);
+
+        const totalSeconds = clock.getElapsedTime();
+        const hrs = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = Math.floor(totalSeconds % 60);
+        flightTimerEl.innerText = `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+
+        renderer.render(scene, camera);
+        }
+
+        startBtn.addEventListener('click', () => {
+        const controls = document.getElementsByName('control');
+        for(let c of controls) { if(c.checked) config.controlMode = c.value; }
+
+        config.startTime = parseFloat(timeSlider.value);
+        config.weatherEnabled = weatherToggle.checked;
+        state.time = config.startTime;
+
+        menu.classList.add('opacity-0', 'pointer-events-none');
+        hud.classList.remove('hidden');
+
+        if (config.controlMode === 'touch') {
+        touchControls.classList.remove('hidden');
+        } else {
+        touchControls.classList.add('hidden');
+        }
+
+        camera.position.set(0, 15, 0);
+        camera.rotation.y = 0;
+
+        state.isPlaying = true;
+        clock.start();
+        });
+
+        window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏盒子 - 精彩即将上线</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+        theme: {
+        extend: {
+        colors: {
+        primary: '#6366f1', // Indigo 500
+        secondary: '#ec4899', // Pink 500
+        dark: '#0f172a', // Slate 900
+        glass: 'rgba(255, 255, 255, 0.1)',
+        glassBorder: 'rgba(255, 255, 255, 0.2)',
+        },
+        fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'blob': 'blob 7s infinite',
+        },
+        keyframes: {
+        float: {
+        '0%, 100%': { transform: 'translateY(0)' },
+        '50%': { transform: 'translateY(-20px)' },
+        },
+        blob: {
+        '0%': { transform: 'translate(0px, 0px) scale(1)' },
+        '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+        '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+        '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        }
+        }
+        }
+        }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #475569;
+            }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+            .glass-card:hover {
+                transform: translateY(-5px) scale(1.02);
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+                border-color: rgba(99, 102, 241, 0.5);
+                box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+            }
+
+        /* Icon styling */
+        .game-icon {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen relative selection:bg-primary selection:text-white">
+
+    <!-- Background Ambient Effects -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <!-- Grid Pattern -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBWMEgwdi4yaDQwdjM5LjhIMHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNhKSIvPjwvc3ZnPg==')] opacity-20"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-12 animate-float" style="animation-duration: 8s;">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
+                    <i class="fa-solid fa-gamepad text-white text-lg"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                    GameBox
+                </h1>
+            </div>
+            <nav class="hidden md:flex gap-6 text-sm font-medium text-gray-400">
+                <a href="#" class="hover:text-white transition-colors">首页</a>
+                <a href="#" class="text-white">游戏库</a>
+                <a href="#" class="hover:text-white transition-colors">排行榜</a>
+                <a href="#" class="hover:text-white transition-colors">关于我们</a>
+            </nav>
+            <button class="md:hidden text-gray-300 hover:text-white">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="text-center py-16 md:py-24 mb-16">
+            <span class="inline-block py-1 px-3 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-6 animate-pulse-slow">
+                🚀 全新版本 v2.0 正在筹备中
+            </span>
+            <h2 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+                探索无限可能的<br>
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-secondary">指尖游戏世界</span>
+            </h2>
+            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+                精选全球热门小游戏，无需下载，即点即玩。更多精彩内容正在火速赶来，敬请期待！
+            </p>
+            <div class="flex justify-center gap-4">
+                <button class="px-8 py-3 rounded-full bg-white text-dark font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg shadow-white/10">
+                    查看更新日志
+                </button>
+                <button class="px-8 py-3 rounded-full glass-panel text-white font-medium hover:bg-white/10 transition-all border border-white/10">
+                    <i class="fa-brands fa-discord mr-2"></i> 加入社区
+                </button>
+            </div>
+        </section>
+
+        <!-- Game Grid -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-secondary"></i> 热门推荐
+                </h3>
+                <div class="flex gap-2">
+                    <button class="w-8 h-8 rounded-lg glass-panel flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <button class="w-8 h-8 rounded-lg glass-panel flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="game-grid">
+                <!-- Game cards will be injected here via JS -->
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-20 border-t border-white/5 pt-10 pb-6 text-center text-gray-500 text-sm">
+            <p>&copy; 2023 GameBox Studio. All rights reserved.</p>
+            <div class="flex justify-center gap-6 mt-4">
+                <a href="#" class="hover:text-primary transition-colors">隐私政策</a>
+                <a href="#" class="hover:text-primary transition-colors">服务条款</a>
+                <a href="#" class="hover:text-primary transition-colors">联系支持</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal (Hidden by default) -->
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-dark/80 backdrop-blur-sm" onclick="closeModal()"></div>
+
+        <!-- Modal Content -->
+        <div class="relative bg-[#1e293b] border border-white/10 rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="text-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary mx-auto flex items-center justify-center mb-4 shadow-lg shadow-primary/25">
+                    <i class="fa-solid fa-hourglass-half text-2xl text-white animate-spin-slow"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2" id="modal-title">敬请期待</h3>
+                <p class="text-gray-400 mb-6" id="modal-desc">开发团队正在日夜赶工，这款游戏即将上线。请关注我们的动态获取第一手消息！</p>
+
+                <button onclick="closeModal()" class="w-full py-3 rounded-xl bg-white text-dark font-bold hover:bg-gray-100 transition-colors">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game Data (增加了 url 属性)
+        const games = [
+        { id: 1, title: "星际穿越", icon: "fa-rocket", color: "from-blue-500 to-cyan-500", url: "game_great.html" },
+        { id: 2, title: "赛博赛车", icon: "fa-car-side", color: "from-purple-500 to-pink-500", url: "game_racing.html" },
+        { id: 3, title: "像素农场", icon: "fa-wheat-awn", color: "from-green-500 to-emerald-500", url: "game_farm.html" },
+        { id: 4, title: "地牢探险", icon: "fa-dungeon", color: "from-orange-500 to-red-500", url: "game_dungeon.html" },
+        { id: 5, title: "宝石消除", icon: "fa-gem", color: "from-indigo-500 to-violet-500", url: "game_gem.html" },
+        { id: 6, title: "塔防大师", icon: "fa-chess-rook", color: "from-slate-500 to-gray-600", url: "game_tower.html" },
+        { id: 7, title: "极速反应", icon: "fa-bolt", color: "from-yellow-400 to-orange-500", url: "game_reflex.html" },
+        { id: 8, title: "深海探秘", icon: "fa-water", color: "from-cyan-400 to-blue-600", url: "game_sea.html" },
+        ];
+
+        const grid = document.getElementById('game-grid');
+
+        // Render Games
+        games.forEach(game => {
+        const card = document.createElement('div');
+        // 保持原有的样式类
+        card.className = "glass-card rounded-2xl p-4 cursor-pointer group relative overflow-hidden";
+
+        // 修改点击事件：直接跳转
+        card.onclick = () => {
+        // 这里使用 window.location.href 进行跳转
+        // 如果文件在同一个文件夹下，直接写文件名即可
+        window.location.href = game.url;
+        };
+
+        card.innerHTML = `
+        <div class="aspect-square rounded-xl game-icon mb-4 flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+        <div class="absolute inset-0 bg-gradient-to-br ${game.color} opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+        <i class="fa-solid ${game.icon} text-4xl text-gray-300 group-hover:text-white transition-colors duration-300"></i>
+        </div>
+        <h4 class="font-bold text-gray-200 group-hover:text-white transition-colors">${game.title}</h4>
+        <div class="flex items-center gap-2 mt-2">
+        <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-gray-400 border border-white/5 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+        点击开始
+        </span>
+        </div>
+        <!-- Hover Glow Effect -->
+        <div class="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-to-br ${game.color} rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"></div>
+        `;
+        grid.appendChild(card);
+        });
+
+        // 注意：由于现在是直接跳转，之前的 Modal 相关代码可以删除，也可以保留给其他功能使用。
+    </script>
+</body>
+</html>
