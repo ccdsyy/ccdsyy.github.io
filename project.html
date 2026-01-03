@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCDSYYZNB - 下载中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 头部 */
+        header {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+            header h1 {
+                font-size: 2.5em;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                background: linear-gradient(to right, #00c6ff, #0072ff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            header p {
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 5px;
+                font-size: 1.1em;
+            }
+
+        /* 容器 */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 50px 20px;
+            flex: 1;
+        }
+
+        /* 作者区域 */
+        .author-box {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .author-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+            .author-badge span {
+                margin-left: 15px;
+                color: #00c6ff;
+                font-weight: bold;
+            }
+
+        /* 下载列表 */
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* 卡片样式 */
+        .download-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .download-card:hover {
+                transform: translateY(-5px);
+                background: rgba(255, 255, 255, 0.08);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+                border-color: #00c6ff;
+            }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .download-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .download-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95em;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* 下载按钮 */
+        .btn-download {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-download:hover {
+                box-shadow: 0 0 20px rgba(0, 198, 255, 0.5);
+                transform: scale(1.02);
+            }
+
+        /* 标签 */
+        .tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>下载中心</h1>
+        <p>Windows C CPU+GPU 究极火力核弹</p>
+    </header>
+
+    <div class="container">
+        <div class="author-box">
+            <div class="author-badge">
+                <span>👨‍💻 作者: 茶茶的饲养员</span>
+            </div>
+        </div>
+
+        <div class="download-grid">
+            <!-- 卡片1: 主程序 -->
+            <div class="download-card">
+                <span class="tag">v1.0 最新版</span>
+                <div class="card-icon">💥</div>
+                <h3>启动核弹</h3>
+                <p>包含 udp_nuke.exe 可执行文件。CPU+GPU 协同工作，支持自定义目标与线程，自动保留系统核心。</p>
+                <!-- 这里的 href 改成你实际的下载链接，如果没有服务器，就放本地文件名 -->
+                <a href="udp_nuke.exe" class="btn-download" download>立即下载</a>
+            </div>
+
+            <!-- 卡片2: 预留 1 -->
+            <div class="download-card">
+                <span class="tag">日志</span>
+                <div class="card-icon">📄</div>
+                <h3>无</h3>
+                <p>无</p>
+                <a href="#" class="btn-download" onclick="alert('功能开发中...'); return false;">无</a>
+            </div>
+
+            <!-- 卡片3: 预留 2 -->
+            <div class="download卡d" class="download-card">
+                <span class="tag">Source</span>
+                <div class="card-icon">💻</div>
+                <h3>源码</h3>
+                <p>下载完整的 C 语言源代码 (.c)，适合学习研究，支持 GCC 编译。</p>
+                <a href="udp_nuke.c" class="btn-download" download>下载源码</a>
+            </div>
+        </div>
+        
+    </div>
+
+    <footer>
+        <p>&copy; 2026 茶茶的饲养员 | 抖音号: ccdsyyznb | 仅供学习交流使用</p>
+    </footer>
+
+</body>
+</html>
