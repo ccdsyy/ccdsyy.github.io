@@ -3,89 +3,379 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CC-Mod 下载站 | 茶茶的饲养员</title>
-    <link rel="stylesheet" href="cc-mod.css">
-    <!-- 引入 FontAwesome 图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>狗sun游戏平台 - 官方下载</title>
+    <style>
+        /* --- 全局变量 --- */
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1e1e24;
+            --primary: #ff6b6b; /* 客户端活力红 */
+            --secondary: #feca57; /* 搞怪黄 */
+            --server-color: #48dbfb; /* 服务端科技蓝 */
+            --text-main: #ffffff;
+            --text-sub: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- 动态背景 --- */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(18, 18, 18, 1) 100%);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(50px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 10s infinite alternate;
+        }
+
+        .blob-1 {
+            top: 10%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+
+        .blob-2 {
+            bottom: 20%;
+            right: 10%;
+            width: 250px;
+            height: 250px;
+            background: var(--secondary);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(30px, 50px);
+            }
+        }
+
+        /* --- 导航栏 --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-shadow: 2px 2px 0px var(--primary);
+        }
+
+            .logo span {
+                color: var(--secondary);
+            }
+
+        .author-tag {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+            .author-tag:hover {
+                background: rgba(255,255,255,0.2);
+                transform: translateY(-2px);
+            }
+
+        /* --- 主体内容 --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+            h1 span {
+                color: var(--primary);
+            }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            margin-bottom: 40px;
+        }
+
+        /* --- 下载区域 --- */
+        .download-section {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            width: 300px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .card:hover {
+                transform: translateY(-10px);
+            }
+
+            /* 客户端卡片装饰 */
+            .card.client::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--primary), #ff4757);
+            }
+
+            /* 服务端卡片装饰 */
+            .card.server::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--server-color), #2e86de);
+            }
+
+            .card h3 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+        .version {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px 0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        /* 客户端按钮 */
+        .btn-client {
+            background: linear-gradient(90deg, var(--primary), #ff4757);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+            .btn-client:hover {
+                box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+                transform: scale(1.05);
+            }
+
+        /* 服务端按钮 */
+        .btn-server {
+            background: linear-gradient(90deg, var(--server-color), #2e86de);
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(72, 219, 251, 0.4);
+        }
+
+            .btn-server:hover {
+                box-shadow: 0 6px 20px rgba(72, 219, 251, 0.6);
+                transform: scale(1.05);
+            }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+            .btn-outline:hover {
+                background: var(--secondary);
+                color: var(--bg-dark);
+            }
+
+        /* --- 功能特性 --- */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 80px;
+            text-align: left;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+            .feature-item h4 {
+                color: var(--secondary);
+                margin-bottom: 8px;
+                font-size: 1.1rem;
+            }
+
+            .feature-item p {
+                font-size: 0.9rem;
+                color: var(--text-sub);
+            }
+
+        /* --- 底部 --- */
+        footer {
+            margin-top: 100px;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-sub);
+            font-size: 0.8rem;
+        }
+
+            footer a {
+                color: var(--primary);
+                text-decoration: none;
+            }
+
+        /* --- 响应式 --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .download-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- 悬浮社交媒体 -->
-    <div class="floating-social">
-        <a href="https://www.douyin.com/user/MS4wLjABAAAASKARfxM-PjyGJvthbLpvjSfR9j129Rno8UWs3D-HPWk" target="_blank" rel="noopener noreferrer" title="抖音">
-            <i class="fab fa-tiktok"></i>
-        </a>
+    <div class="bg-animation">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
     </div>
 
-    <header class="top-bar">
-        <div class="container header-content">
-            <h1 class="site-title">茶茶的饲养员 <span class="badge">cc-mod</span></h1>
-            <a href="index.html" class="back-link">返回主页 <i class="fas fa-home"></i></a>
+    <nav>
+        <div class="logo">狗sun<span>游戏平台</span></div>
+        <div class="author-tag">
+            作者：茶茶的饲养员
         </div>
-    </header>
+    </nav>
 
-    <main>
-        <section class="hero-simple">
-            <div class="container hero-content">
-                <h2 class="mod-title">CC-Mod <span class="version">v1.0</span></h2>
-                <p class="mod-desc">Minecraft 1.21.4 终极中文客户端模组</p>
+    <div class="container">
+        <h1>别玩了，<br>快<span>玩</span>这个！</h1>
+        <p class="subtitle">由“茶茶的饲养员”倾力打造 · 你的下一个游戏何必花钱</p>
+
+        <div class="download-section">
+            <!-- 客户端下载卡片 -->
+            <div class="card client">
+                <h3>🤖 Windows 客户端</h3>
+                <span class="version">版本 v1.0 | 大小 17.2 MB</span>
+                <a href="狗sun游戏平台.exe" class="btn btn-client">立即下载 .exe</a>
+                <a href="https://www.douyin.com/user/MS4wLjABAAAASKARfxM-PjyGJvthbLpvjSfR9j129Rno8UWs3D-HPWk?from_tab_name=main" target="_blank" class="btn btn-outline">关注作者抖音</a>
             </div>
-        </section>
 
-        <!-- 核心下载区 -->
-        <section id="download" class="container">
-            <div class="download-card">
-                <div class="download-header">
-                    <i class="fas fa-cube"></i>
-                    <span>最新版本发布</span>
-                </div>
-                <div class="download-info">
-                    <h3>CC-Mod-v1.0.0-CH.jar</h3>
-                    <p>适配 MC 1.21.4 | Fabric API 必装 | 大小: ~2MB</p>
-                    <ul class="feature-list">
-                        <li><i class="fas fa-check"></i> 全中文汉化界面</li>
-                        <li><i class="fas fa-check"></i> 自动检测 FPS/TPS/Ping</li>
-                        <li><i class="fas fa-check"></i> 集成战斗辅助与透视</li>
-                    </ul>
-                </div>
-                <div class="download-action">
-                    <!-- jar 文件下载链接 -->
-                    <a href="cc-mod.jar" class="cta-button main-download">立即下载 <i class="fas fa-download"></i></a>
-                    <span class="md5-hash">SHA256: 8f4b...a2c1 (校验文件)</span>
+            <!-- 服务端下载卡片 -->
+            <div class="card server">
+                <h3>🖥️ windows服务端</h3>
+                <span class="version">版本 v1.0 | 使用蓝奏云上传文件（github有限制）</span>
+                <a href="https://ccdsyybd.lanzout.com/igGT23hy335g" class="btn btn-server">下载 服务端（密码:djwb）</a>
+                <div style="font-size: 0.8rem; color: #888; margin-top: 10px;">
+                    适合：自建服、开发者
                 </div>
             </div>
-        </section>
-
-        <!-- 简短教程 -->
-        <section id="guide" class="container guide-section">
-            <h2><i class="fas fa-book"></i> 快速安装</h2>
-            <div class="step-list">
-                <div class="step-item">
-                    <div class="step-num">1</div>
-                    <div class="step-text">下载并安装 <strong>Fabric Loader</strong>。</div>
-                </div>
-                <div class="step-item">
-                    <div class="step-num">2</div>
-                    <div class="step-text">将本站的 <strong>.jar</strong> 文件放入游戏目录的 `mods` 文件夹。</div>
-                </div>
-                <div class="step-item">
-                    <div class="step-num">3</div>
-                    <div class="step-text">启动游戏，在模组列表中找到 <strong>CC-Mod</strong> 即可。</div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="container">
-            <h2>关于作者</h2>
-            <p>我是 <strong>茶茶的饲养员</strong>，专注于 Minecraft 技术分享。</p>
-            <p>挖你的鼻孔喵喵</p>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>© 2026 茶茶的饲养员 | CC-Mod Mirror Site.</p>
         </div>
+
+        <div class="features">
+            <div class="feature-item">
+                <h4>🚀 极速启动</h4>
+                <p>基于 Python 优化内核，秒开体验，拒绝卡顿。</p>
+            </div>
+            <div class="feature-item">
+                <h4>🛡️ AI 防御</h4>
+                <p>内置 AI 智能审核，自动过滤垃圾信息，环境清朗。</p>
+            </div>
+            <div class="feature-item">
+                <h4>🎮 社区互动</h4>
+                <p>内置论坛系统，随时随地分享游戏心得和吐槽。</p>
+            </div>
+            <div class="feature-item">
+                <h4>📂 自由上传</h4>
+                <p>开发者的天堂，支持发布你的自制 .zip 游戏包。</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright © 2026 狗sun游戏平台. All Rights Reserved.</p>
+        <p>
+            <a href="https://www.douyin.com/user/MS4wLjABAAAASKARfxM-PjyGJvthbLpvjSfR9j129Rno8UWs3D-HPWk?from_tab_name=main" target="_blank">抖音主页</a>
+            |
+            抖音号：ccdsyyznb
+        </p>
     </footer>
 
 </body>
