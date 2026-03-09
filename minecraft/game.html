@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Craft.js</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 开始菜单 -->
+    <div id="start-menu">
+        <h1>Craft.js</h1>
+        <p>请选择你的控制方式</p>
+        <div class="menu-buttons">
+            <button id="keyboard-mouse-btn" class="menu-button">键鼠模式</button>
+            <button id="touchscreen-btn" class="menu-button">触屏模式</button>
+        </div>
+    </div>
+
+    <!-- 游戏界面 (默认隐藏) -->
+    <div id="game-ui">
+        <div id="crosshair"></div>
+        <div id="action-buttons">
+            <button id="dig-btn" class="action-btn">挖</button>
+            <button id="place-btn" class="action-btn">建</button>
+        </div>
+        <div id="joystick-container"></div>
+        <button id="jump-button">跳</button>
+    </div>
+
+    <!-- 游戏画布 -->
+    <div id="game-container"></div>
+    
+    <!-- 引入网络上的库文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
+    <!-- 引入游戏脚本 -->
+    <script src="game.js"></script>
+</body>
+</html>

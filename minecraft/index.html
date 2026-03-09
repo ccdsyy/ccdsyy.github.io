@@ -1,41 +1,262 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Craft.js</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Portal | 游戏门户</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+portal: {
+dark: '#0a0e17',
+darker: '#060910',
+card: 'rgba(20, 30, 48, 0.7)',
+accent: '#00f0ff',
+secondary: '#ff00aa',
+glow: '#00ff88',
+warm: '#ffaa00'
+}
+},
+fontFamily: {
+pixel: ['Press Start 2P', 'cursive'],
+main: ['Inter', 'sans-serif']
+}
+}
+}
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #0a0e17;
+overflow-x: hidden;
+}
+
+/* 动态网格背景 */
+.grid-bg {
+background-image: 
+linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+background-size: 40px 40px;
+animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+0% { background-position: 0 0; }
+100% { background-position: 40px 40px; }
+}
+
+/* 玻璃态卡片 */
+.glass-panel {
+background: rgba(15, 23, 42, 0.6);
+backdrop-filter: blur(16px);
+border: 1px solid rgba(255, 255, 255, 0.1);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.glass-panel:hover {
+transform: translateY(-10px) scale(1.02);
+border-color: rgba(255, 255, 255, 0.3);
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* 发光效果 */
+.glow-text {
+text-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+}
+
+/* 卡片内光效 */
+.card-glow {
+position: absolute;
+width: 200px;
+height: 200px;
+background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+border-radius: 50%;
+pointer-events: none;
+opacity: 0;
+transition: opacity 0.4s ease;
+}
+
+.glass-panel:hover .card-glow {
+opacity: 1;
+}
+
+/* 箭头动画 */
+.arrow-bounce {
+animation: bounceRight 1.5s infinite;
+}
+
+@keyframes bounceRight {
+0%, 100% { transform: translateX(0); }
+50% { transform: translateX(8px); }
+}
+
+/* 浮动粒子 */
+.particle {
+position: absolute;
+border-radius: 50%;
+pointer-events: none;
+animation: floatUp 8s linear infinite;
+}
+
+@keyframes floatUp {
+0% { transform: translateY(100vh) scale(0); opacity: 0; }
+20% { opacity: 1; }
+100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+}
+
+/* 版本标签 */
+.version-badge {
+clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
+}
+</style>
 </head>
-<body>
-    <!-- 开始菜单 -->
-    <div id="start-menu">
-        <h1>Craft.js</h1>
-        <p>请选择你的控制方式</p>
-        <div class="menu-buttons">
-            <button id="keyboard-mouse-btn" class="menu-button">键鼠模式</button>
-            <button id="touchscreen-btn" class="menu-button">触屏模式</button>
-        </div>
-    </div>
+<body class="min-h-screen grid-bg relative flex flex-col items-center justify-center p-4">
 
-    <!-- 游戏界面 (默认隐藏) -->
-    <div id="game-ui">
-        <div id="crosshair"></div>
-        <div id="action-buttons">
-            <button id="dig-btn" class="action-btn">挖</button>
-            <button id="place-btn" class="action-btn">建</button>
-        </div>
-        <div id="joystick-container"></div>
-        <button id="jump-button">跳</button>
-    </div>
+<!-- 背景粒子容器 -->
+<div id="particleContainer" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-    <!-- 游戏画布 -->
-    <div id="game-container"></div>
-    
-    <!-- 引入网络上的库文件 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.babylonjs.com/cannon.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
-    <!-- 引入游戏脚本 -->
-    <script src="game.js"></script>
+<!-- 顶部装饰线 -->
+<div class="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-portal-accent via-portal-secondary to-portal-warm z-50"></div>
+
+<!-- 主容器 -->
+<main class="relative z-10 w-full max-w-5xl">
+
+<!-- 标题区域 -->
+<header class="text-center mb-16">
+<h1 class="pixel-font text-3xl md:text-4xl text-white glow-text mb-4 tracking-wider">
+GAME PORTAL
+</h1>
+<p class="text-gray-400 text-lg tracking-wide">选择你的世界，开始冒险</p>
+</header>
+
+<!-- 游戏卡片网格 -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+
+<!-- 卡片 1: 1.12 -->
+<a href="1.12-eaglercraftx-main/index.html" class="glass-panel rounded-3xl p-8 md:p-10 relative overflow-hidden group block cursor-pointer">
+<!-- 内部光效 -->
+<div class="card-glow top-0 right-0"></div>
+<div class="card-glow bottom-0 left-0" style="background: radial-gradient(circle, rgba(0, 255, 136, 0.15) 0%, transparent 70%);"></div>
+
+<!-- 内容 -->
+<div class="relative z-10">
+<div class="flex items-start justify-between mb-6">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-portal-accent to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+<i class="fas fa-cube text-white text-2xl"></i>
+</div>
+<div class="version-badge bg-portal-accent text-portal-dark px-4 py-1 text-sm font-bold">
+v1.12
+</div>
+</div>
+
+<h2 class="pixel-font text-xl text-white mb-3">1.12</h2>
+<p class="text-gray-400 mb-8 leading-relaxed">
+经典版本体验，重温最初的像素世界。探索、建造、生存，无限可能等你发现。
+</p>
+
+<div class="flex items-center justify-between">
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 text-xs rounded-full border border-cyan-500/20">经典</span>
+<span class="px-3 py-1 bg-green-500/10 text-green-400 text-xs rounded-full border border-green-500/20">生存</span>
+</div>
+<div class="flex items-center gap-2 text-portal-accent font-semibold group-hover:gap-4 transition-all">
+<span>进入游戏</span>
+<i class="fas fa-arrow-right arrow-bounce"></i>
+</div>
+</div>
+</div>
+</a>
+
+<!-- 卡片 2: craft.js -->
+<a href="game.html" class="glass-panel rounded-3xl p-8 md:p-10 relative overflow-hidden group block cursor-pointer">
+<!-- 内部光效 -->
+<div class="card-glow top-0 right-0" style="background: radial-gradient(circle, rgba(255, 170, 0, 0.15) 0%, transparent 70%);"></div>
+<div class="card-glow bottom-0 left-0" style="background: radial-gradient(circle, rgba(255, 0, 170, 0.15) 0%, transparent 70%);"></div>
+
+<!-- 内容 -->
+<div class="relative z-10">
+<div class="flex items-start justify-between mb-6">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-portal-warm to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+<i class="fas fa-code text-white text-2xl"></i>
+</div>
+<div class="version-badge bg-portal-warm text-portal-dark px-4 py-1 text-sm font-bold">
+自制
+</div>
+</div>
+
+<h2 class="pixel-font text-xl text-white mb-3">craft.js</h2>
+<p class="text-gray-400 mb-8 leading-relaxed">
+自制游戏引擎，独特创意体验。用代码构建世界，探索全新玩法机制。
+</p>
+
+<div class="flex items-center justify-between">
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-orange-500/10 text-orange-400 text-xs rounded-full border border-orange-500/20">自制</span>
+<span class="px-3 py-1 bg-pink-500/10 text-pink-400 text-xs rounded-full border border-pink-500/20">创新</span>
+</div>
+<div class="flex items-center gap-2 text-portal-warm font-semibold group-hover:gap-4 transition-all">
+<span>进入游戏</span>
+<i class="fas fa-arrow-right arrow-bounce"></i>
+</div>
+</div>
+</div>
+</a>
+
+</div>
+
+<!-- 底部信息 -->
+<footer class="mt-16 text-center">
+<div class="inline-flex items-center gap-3 text-gray-500 text-sm">
+<i class="fas fa-gamepad"></i>
+<span>选择游戏自动跳转</span>
+</div>
+</footer>
+
+</main>
+
+<script>
+// 创建浮动粒子
+function createParticles() {
+const container = document.getElementById('particleContainer');
+const colors = ['#00f0ff', '#ff00aa', '#00ff88', '#ffaa00'];
+const particleCount = 20;
+
+for (let i = 0; i < particleCount; i++) {
+const particle = document.createElement('div');
+particle.className = 'particle';
+const size = Math.random() * 6 + 2;
+particle.style.width = size + 'px';
+particle.style.height = size + 'px';
+particle.style.left = Math.random() * 100 + '%';
+particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+particle.style.animationDelay = Math.random() * 8 + 's';
+particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+particle.style.boxShadow = `0 0 ${size * 2}px ${particle.style.background}`;
+container.appendChild(particle);
+}
+}
+
+// 鼠标跟随光效
+document.querySelectorAll('.glass-panel').forEach(card => {
+card.addEventListener('mousemove', (e) => {
+const rect = card.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+card.style.setProperty('--mouse-x', `${x}px`);
+card.style.setProperty('--mouse-y', `${y}px`);
+});
+});
+
+// 初始化
+createParticles();
+</script>
+
 </body>
 </html>
